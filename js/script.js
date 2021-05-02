@@ -1,13 +1,22 @@
+// Selected Elements that are reused
+const otherJobRoleField = document.querySelector("#other-job-role");
+const colorElement = document.querySelector("#color");
+const designElement = document.querySelector('#design');
+const fieldsetElement = document.querySelector('#activities');
+const activities = document.querySelector('#activities-box');
+const totalCost = document.querySelector('#activities-cost');
+
 // On page load
-document.getElementById("name").focus();
-document.getElementById("other-job-role").style.display = "none";
-document.getElementById("color").disabled = true;
+otherJobRoleField.style.display = "none";
+colorElement.disabled = true;
+document.querySelector("#name").focus(); // Setting first textbox as focus
+document.querySelector("#payment").selectedIndex = 1; // Selecting so default is credit card
 
 // Functions
 
 function JobRoleOther() {
     var title = document.getElementById("title").value;
-    var otherJobRoleField = document.getElementById("other-job-role");
+    var otherJobRoleField = document.querySelector("#other-job-role");
     if (title === "other") {
         otherJobRoleField.style.display = "block";
     } else {
@@ -19,7 +28,7 @@ const titleElement = document.querySelector('#title');
 
 titleElement.addEventListener('change', (event) => {
     console.log(event.target.value)
-    var otherJobRoleField = document.getElementById("other-job-role");
+    var otherJobRoleField = document.querySelector("#other-job-role");
     if (event.target.value === "other") {
         console.log("other")
         otherJobRoleField.style.display = "block";
@@ -27,12 +36,10 @@ titleElement.addEventListener('change', (event) => {
         otherJobRoleField.style.display = "none";
     }
 
-})
+});
 
-const designElement = document.querySelector('#design');
 
 designElement.addEventListener('change', (event) => {
-    let colorElement = document.getElementById("color");
     colorElement.disabled = false;
     // Remove options
     var i, L = colorElement.options.length - 1;
@@ -63,4 +70,18 @@ designElement.addEventListener('change', (event) => {
         colorElement.add(option);
     }
     colorElement.selectedIndex = 0;
-})
+});
+
+
+fieldsetElement.addEventListener('change', (event) => {
+    if (event.target.type === "checkbox") {
+        var totalprice = 0;
+        for (var count = 0; count <= activities.childElementCount - 1; count++) {
+            if (activities.children[count].children[0].checked) {
+                totalprice += parseInt(activities.children[count].children[0].getAttribute("data-cost"));
+            }
+        }
+        totalCost.innerText = `Total: $${totalprice}`
+        console.log(totalprice);
+    }
+});
