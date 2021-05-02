@@ -5,12 +5,21 @@ const designElement = document.querySelector('#design');
 const fieldsetElement = document.querySelector('#activities');
 const activities = document.querySelector('#activities-box');
 const totalCost = document.querySelector('#activities-cost');
+const paymentElement = document.querySelector("#payment");
+const creditcardElement = document.querySelector("#credit-card");
+const paymentMethods = document.querySelector("#payment-methods");
+const paypalElement = document.querySelector("#paypal");
+const bitcoinElement = document.querySelector("#bitcoin");
+// Credit card elements
+const s = document.querySelector(".payment-method-box")
 
 // On page load
 otherJobRoleField.style.display = "none";
+paypalElement.style.display = "none";
+bitcoinElement.style.display = "none";
 colorElement.disabled = true;
+paymentElement.selectedIndex = 1; // Selecting so default is credit card
 document.querySelector("#name").focus(); // Setting first textbox as focus
-document.querySelector("#payment").selectedIndex = 1; // Selecting so default is credit card
 
 // Functions
 
@@ -85,3 +94,20 @@ fieldsetElement.addEventListener('change', (event) => {
         console.log(totalprice);
     }
 });
+
+paymentElement.addEventListener('change', (event) => {
+    console.log("triggered")
+    creditcardElement.style.display = "none";
+    paypalElement.style.display = "none";
+    bitcoinElement.style.display = "none";
+    if (event.target.value === "credit-card") {
+        creditcardElement.style.display = "block";
+    }
+    else if (event.target.value === "paypal") {
+        paypalElement.style.display = "block";
+    }
+    else if (event.target.value === "bitcoin") {
+        bitcoinElement.style.display = "block";
+    }
+
+})
