@@ -10,8 +10,7 @@ const creditcardElement = document.querySelector("#credit-card");
 const paymentMethods = document.querySelector("#payment-methods");
 const paypalElement = document.querySelector("#paypal");
 const bitcoinElement = document.querySelector("#bitcoin");
-// Credit card elements
-const s = document.querySelector(".payment-method-box")
+const formElement = document.querySelector('form');
 
 // On page load
 otherJobRoleField.style.display = "none";
@@ -20,6 +19,7 @@ bitcoinElement.style.display = "none";
 colorElement.disabled = true;
 paymentElement.selectedIndex = 1; // Selecting so default is credit card
 document.querySelector("#name").focus(); // Setting first textbox as focus
+// document.querySelector("#name").classList.add("error-text"); // Setting first textbox as focus
 
 // Functions
 
@@ -110,4 +110,9 @@ paymentElement.addEventListener('change', (event) => {
         bitcoinElement.style.display = "block";
     }
 
-})
+});
+
+formElement.addEventListener('submit', (event) => {
+    event.preventDefault(); // Prevent reload page
+    console.log("test")
+});
