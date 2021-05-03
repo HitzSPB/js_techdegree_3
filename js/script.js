@@ -4,6 +4,7 @@ const otherJobRoleField = document.querySelector("#other-job-role");
 const colorElement = document.querySelector("#color");
 const designElement = document.querySelector('#design');
 const fieldsetElement = document.querySelector('#activities');
+const activitiesCheckboxes = fieldsetElement.getElementsByTagName('input')
 const activities = document.querySelector('#activities-box');
 const totalCost = document.querySelector('#activities-cost');
 const paymentElement = document.querySelector("#payment");
@@ -33,9 +34,9 @@ const emailValidator = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+
 const cardnumberValidator = /^[0-9]{13,16}$/
 const zipnumberValidator = /^[0-9]{5}$/
 const cvvnumberValidator = /^[0-9]{3}$/
+const nameValidator = /./
 
 // Functions
-
 function JobRoleOther() {
     var title = document.getElementById("title").value;
     var otherJobRoleField = document.querySelector("#other-job-role");
@@ -125,17 +126,42 @@ paymentElement.addEventListener('change', (event) => {
 
 });
 
+function AddValidationError(element) {
+    element.parentElement.classList.add('not-valid');
+    element.parentElement.classList.remove('valid');
+    element.parentElement.lastElementChild.style.display = 'block';
+}
+
+function RemoveValidationError(element) {
+    if (element.parentElement.classList.contains("not-valid")) {
+        element.parentElement.classList.remove('not-valid');
+        element.parentElement.classList.add('valid');
+        element.parentElement.lastElementChild.style.display = 'none';
+    }
+    else {
+        element.parentElement.classList.add('valid');
+    }
+}
+
+function Validate(element, validator) {
+    if (!validator.test(element.value)) {
+        AddValidationError(element);
+        return 1;
+    }
+    else {
+        RemoveValidationError(element);
+        return 0;
+    }
+}
+
 formElement.addEventListener('submit', (event) => {
     event.preventDefault(); // Prevent reload page
+    var errorsFoundCount = 0;
     // Check name
-    if (nameElement.value === '') {
-        nameElement.classList.add('error');
-    }
+    errorsFoundCount += Validate(nameElement, nameValidator);
 
     // Check email
-    if (emailElement.value === '' || !emailValidator.test(emailElement.value)) {
-        emailElement.classList.add('error');
-    }
+    errorsFoundCount += Validate(emailElement, emailValidator);
 
     // Check activities selected
     var anyChecked = false;
@@ -145,17 +171,51 @@ formElement.addEventListener('submit', (event) => {
         }
     }
     if (!anyChecked) {
-        activities.classList.add('error');
+        AddValidationError(activities);
+        errorsFoundCount++;
+    }
+    else {
+        RemoveValidationError(activities);
     }
 
     // Credit card validation
-    if (paymentElement.value === "credit-card" && !cardnumberValidator.test(creditcardNumberElement.value)) {
-        creditcardNumberElement.classList.add("error")
+    if (paymentElement.value === "credit-card") {
+        errorsFoundCount += Validate(creditcardNumberElement, cardnumberValidator);
+        errorsFoundCount += Validate(zipNumberElement, zipnumberValidator);
+        errorsFoundCount += Validate(cvvNumberElement, cvvnumberValidator);
     }
-    if (paymentElement.value === "credit-card" && !zipnumberValidator.test(zipNumberElement.value)) {
-        zipNumberElement.classList.add("error")
-    }
-    if (paymentElement.value === "credit-card" && !cvvnumberValidator.test(cvvNumberElement.value)) {
-        cvvNumberElement.classList.add("error")
-    }
+    if (errorsFoundCount === 0)
+        formElement.submit();
 });
+
+
+const CheckboxFocusOnTab = (checkboxFieldset) => {
+    for (let i = 0; i < checkboxFieldset.length; i++) {
+        checkboxFieldset[i].addEventListener('focus', (event) => {
+            event.target.parentNode.classList.add('focus');
+        });
+        checkboxFieldset[i].addEventListener('blur', (event) => {
+            event.target.parentNode.classList.remove('focus');
+        });
+    }
+}
+
+// Live Validation
+nameElement.addEventListener("blur", (event) => {
+    Validate(nameElement, nameValidator);
+})
+emailElement.addEventListener("blur", (event) => {
+    Validate(emailElement, emailValidator);
+})
+creditcardNumberElement.addEventListener("blur", (event) => {
+    Validate(creditcardNumberElement, cardnumberValidator);
+})
+zipNumberElement.addEventListener("blur", (event) => {
+
+    Validate(zipNumberElement, zipnumberValidator);
+})
+cvvNumberElement.addEventListener("blur", (event) => {
+    Validate(cvvNumberElement, cvvnumberValidator);
+})
+
+CheckboxFocusOnTab(activitiesCheckboxes);
