@@ -18,23 +18,15 @@ const creditcardNumberElement = document.querySelector('#cc-num');
 const zipNumberElement = document.querySelector('#zip');
 const cvvNumberElement = document.querySelector('#cvv');
 
-// On page load
-otherJobRoleField.style.display = "none";
-paypalElement.style.display = "none";
-bitcoinElement.style.display = "none";
-colorElement.disabled = true;
-paymentElement.selectedIndex = 1; // Selecting so default is credit card
-nameElement.focus(); // Setting first textbox as focus
-// document.querySelector("#name").classList.add("error-text"); // Setting first textbox as focus
-
 // RegEx validators
+const nameValidator = /.{2,}/
 
 // Found regex for email validation :: https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
 const emailValidator = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
 const cardnumberValidator = /^[0-9]{13,16}$/
 const zipnumberValidator = /^[0-9]{5}$/
 const cvvnumberValidator = /^[0-9]{3}$/
-const nameValidator = /./
 
 // Functions
 function JobRoleOther() {
@@ -126,10 +118,14 @@ paymentElement.addEventListener('change', (event) => {
 
 });
 
-function AddValidationError(element) {
+function AddValidationError(element, customErrorInformation = null) {
     element.parentElement.classList.add('not-valid');
     element.parentElement.classList.remove('valid');
     element.parentElement.lastElementChild.style.display = 'block';
+
+    if (customErrorInformation !== null) {
+        element.parentElement.querySelector(".hint").innerText = customErrorInformation;
+    }
 }
 
 function RemoveValidationError(element) {
@@ -154,6 +150,12 @@ function Validate(element, validator) {
     }
 }
 
+// https://stackoverflow.com/questions/19655975/check-if-an-array-contains-duplicate-values
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set
+function checkIfArrayIsUnique(myArray) {
+    return myArray.length === new Set(myArray).size;
+}
+
 formElement.addEventListener('submit', (event) => {
     event.preventDefault(); // Prevent reload page
     var errorsFoundCount = 0;
@@ -165,13 +167,21 @@ formElement.addEventListener('submit', (event) => {
 
     // Check activities selected
     var anyChecked = false;
+    var timeOfCheckedElements = [];
     for (var count = 0; count <= activities.childElementCount - 1; count++) {
         if (activities.children[count].children[0].checked) {
             anyChecked = true;
+            // Should store actual time, instead of just the string.
+            timeOfCheckedElements.push(activities.children[count].children[0].getAttribute("data-day-and-time"))
+            console.log(timeOfCheckedElements);
         }
     }
     if (!anyChecked) {
-        AddValidationError(activities);
+        AddValidationError(activities, "Choose at least one activity");
+        errorsFoundCount++;
+    }
+    else if (!checkIfArrayIsUnique(timeOfCheckedElements)) {
+        AddValidationError(activities, "You have selected activities that overlap");
         errorsFoundCount++;
     }
     else {
@@ -199,6 +209,14 @@ const CheckboxFocusOnTab = (checkboxFieldset) => {
         });
     }
 }
+const SetupPageElementsOnPageLoad = () => {
+    otherJobRoleField.style.display = "none";
+    paypalElement.style.display = "none";
+    bitcoinElement.style.display = "none";
+    colorElement.disabled = true;
+    paymentElement.selectedIndex = 1; // Selecting so default is credit card
+    nameElement.focus(); // Setting first textbox as focus
+}
 
 // Live Validation
 nameElement.addEventListener("blur", (event) => {
@@ -218,4 +236,7 @@ cvvNumberElement.addEventListener("blur", (event) => {
     Validate(cvvNumberElement, cvvnumberValidator);
 })
 
+
+// On page load
 CheckboxFocusOnTab(activitiesCheckboxes);
+SetupPageElementsOnPageLoad()
