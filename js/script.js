@@ -20,7 +20,7 @@ const cvvNumberElement = document.querySelector('#cvv');
 const titleElement = document.querySelector('#title');
 
 // RegEx validators
-const nameValidator = /.{2,}/
+const nameValidator = /\D{2,}$/
 
 // Found regex for email validation :: https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
 const emailValidator = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
