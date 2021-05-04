@@ -209,6 +209,7 @@ paymentElement.addEventListener('change', (event) => {
 
 });
 
+// Handles the press of the submit button. Checks all rules and only submit if no errors found in the data inserted on the page
 formElement.addEventListener('submit', (event) => {
     event.preventDefault(); // Prevent reload page
     var errorsFoundCount = 0;
@@ -250,7 +251,7 @@ formElement.addEventListener('submit', (event) => {
         formElement.submit();
 });
 
-// On page load
+// Run setup functions
 CheckboxFocusOnTab(activitiesCheckboxes);
 SetupPageElementsOnPageLoad()
 SetupLiveValidation();
