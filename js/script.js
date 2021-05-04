@@ -217,6 +217,31 @@ paymentElement.addEventListener('change', (event) => {
 
 });
 
+activities.addEventListener("change", (event) => {
+    var anyChecked = false;
+    var timeOfCheckedElements = [];
+    for (var count = 0; count <= activities.childElementCount - 1; count++) {
+        if (activities.children[count].children[0].checked) {
+            anyChecked = true;
+            // Should store actual time, instead of just the string.
+            timeOfCheckedElements.push(activities.children[count].children[0].getAttribute("data-day-and-time"))
+        }
+        else if (timeOfCheckedElements.includes(activities.children[count].children[0].getAttribute("data-day-and-time"))) {
+            activities.children[count].children[0].parentElement.classList.add("disabled");
+        }
+    }
+    if (!anyChecked) {
+        AddValidationError(activities, "Choose at least one activity");
+    }
+    // We added this check as you can still click it even when the element is disabled
+    else if (!checkIfArrayIsUnique(timeOfCheckedElements)) {
+        AddValidationError(activities, "You have selected activities that overlap");
+    }
+    else {
+        RemoveValidationError(activities);
+    }
+})
+
 // Handles the press of the submit button. Checks all rules and only submit if no errors found in the data inserted on the page
 formElement.addEventListener('submit', (event) => {
     event.preventDefault(); // Prevent reload page
