@@ -99,22 +99,38 @@ const SetupPageElementsOnPageLoad = () => {
 
 // Live Validation
 const SetupLiveValidation = () => {
-    nameElement.addEventListener("blur", (event) => {
+    nameElement.addEventListener("blur", () => {
         Validate(nameElement, nameValidator);
-    })
-    emailElement.addEventListener("blur", (event) => {
+    });
+    nameElement.addEventListener("input", () => {
+        Validate(nameElement, nameValidator);
+    });
+    emailElement.addEventListener("blur", () => {
         Validate(emailElement, emailValidator);
-    })
-    creditcardNumberElement.addEventListener("blur", (event) => {
+    });
+    emailElement.addEventListener("input", () => {
+        Validate(emailElement, emailValidator);
+    });
+    creditcardNumberElement.addEventListener("blur", () => {
         Validate(creditcardNumberElement, cardnumberValidator);
-    })
-    zipNumberElement.addEventListener("blur", (event) => {
+    });
+    creditcardNumberElement.addEventListener("input", () => {
+        Validate(creditcardNumberElement, cardnumberValidator);
+    });
+    zipNumberElement.addEventListener("blur", () => {
 
         Validate(zipNumberElement, zipnumberValidator);
-    })
-    cvvNumberElement.addEventListener("blur", (event) => {
+    });
+    zipNumberElement.addEventListener("input", () => {
+
+        Validate(zipNumberElement, zipnumberValidator);
+    });
+    cvvNumberElement.addEventListener("blur", () => {
         Validate(cvvNumberElement, cvvnumberValidator);
-    })
+    });
+    cvvNumberElement.addEventListener("input", () => {
+        Validate(cvvNumberElement, cvvnumberValidator);
+    });
 }
 
 
