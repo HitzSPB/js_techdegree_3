@@ -17,6 +17,7 @@ const emailElement = document.querySelector('#email');
 const creditcardNumberElement = document.querySelector('#cc-num');
 const zipNumberElement = document.querySelector('#zip');
 const cvvNumberElement = document.querySelector('#cvv');
+const titleElement = document.querySelector('#title');
 
 // RegEx validators
 const nameValidator = /.{2,}/
@@ -39,13 +40,89 @@ function JobRoleOther() {
     }
 }
 
-const titleElement = document.querySelector('#title');
+function AddValidationError(element, customErrorInformation = null) {
+    element.parentElement.classList.add('not-valid');
+    element.parentElement.classList.remove('valid');
+    element.parentElement.lastElementChild.style.display = 'block';
+
+    if (customErrorInformation !== null) {
+        element.parentElement.querySelector(".hint").innerText = customErrorInformation;
+    }
+}
+
+function RemoveValidationError(element) {
+    if (element.parentElement.classList.contains("not-valid")) {
+        element.parentElement.classList.remove('not-valid');
+        element.parentElement.classList.add('valid');
+        element.parentElement.lastElementChild.style.display = 'none';
+    }
+    else {
+        element.parentElement.classList.add('valid');
+    }
+}
+
+function Validate(element, validator) {
+    if (!validator.test(element.value)) {
+        AddValidationError(element);
+        return 1;
+    }
+    else {
+        RemoveValidationError(element);
+        return 0;
+    }
+}
+
+// https://stackoverflow.com/questions/19655975/check-if-an-array-contains-duplicate-values
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set
+function checkIfArrayIsUnique(myArray) {
+    return myArray.length === new Set(myArray).size;
+}
+
+const CheckboxFocusOnTab = (checkboxFieldset) => {
+    for (let i = 0; i < checkboxFieldset.length; i++) {
+        checkboxFieldset[i].addEventListener('focus', (event) => {
+            event.target.parentNode.classList.add('focus');
+        });
+        checkboxFieldset[i].addEventListener('blur', (event) => {
+            event.target.parentNode.classList.remove('focus');
+        });
+    }
+}
+const SetupPageElementsOnPageLoad = () => {
+    otherJobRoleField.style.display = "none";
+    paypalElement.style.display = "none";
+    bitcoinElement.style.display = "none";
+    colorElement.disabled = true;
+    paymentElement.selectedIndex = 1; // Selecting so default is credit card
+    nameElement.focus(); // Setting first textbox as focus
+}
+
+// Live Validation
+const SetupLiveValidation = () => {
+    nameElement.addEventListener("blur", (event) => {
+        Validate(nameElement, nameValidator);
+    })
+    emailElement.addEventListener("blur", (event) => {
+        Validate(emailElement, emailValidator);
+    })
+    creditcardNumberElement.addEventListener("blur", (event) => {
+        Validate(creditcardNumberElement, cardnumberValidator);
+    })
+    zipNumberElement.addEventListener("blur", (event) => {
+
+        Validate(zipNumberElement, zipnumberValidator);
+    })
+    cvvNumberElement.addEventListener("blur", (event) => {
+        Validate(cvvNumberElement, cvvnumberValidator);
+    })
+}
+
+
+// Listeners
 
 titleElement.addEventListener('change', (event) => {
-    console.log(event.target.value)
     var otherJobRoleField = document.querySelector("#other-job-role");
     if (event.target.value === "other") {
-        console.log("other")
         otherJobRoleField.style.display = "block";
     } else {
         otherJobRoleField.style.display = "none";
@@ -97,12 +174,10 @@ fieldsetElement.addEventListener('change', (event) => {
             }
         }
         totalCost.innerText = `Total: $${totalprice}`
-        console.log(totalprice);
     }
 });
 
 paymentElement.addEventListener('change', (event) => {
-    console.log("triggered")
     creditcardElement.style.display = "none";
     paypalElement.style.display = "none";
     bitcoinElement.style.display = "none";
@@ -117,44 +192,6 @@ paymentElement.addEventListener('change', (event) => {
     }
 
 });
-
-function AddValidationError(element, customErrorInformation = null) {
-    element.parentElement.classList.add('not-valid');
-    element.parentElement.classList.remove('valid');
-    element.parentElement.lastElementChild.style.display = 'block';
-
-    if (customErrorInformation !== null) {
-        element.parentElement.querySelector(".hint").innerText = customErrorInformation;
-    }
-}
-
-function RemoveValidationError(element) {
-    if (element.parentElement.classList.contains("not-valid")) {
-        element.parentElement.classList.remove('not-valid');
-        element.parentElement.classList.add('valid');
-        element.parentElement.lastElementChild.style.display = 'none';
-    }
-    else {
-        element.parentElement.classList.add('valid');
-    }
-}
-
-function Validate(element, validator) {
-    if (!validator.test(element.value)) {
-        AddValidationError(element);
-        return 1;
-    }
-    else {
-        RemoveValidationError(element);
-        return 0;
-    }
-}
-
-// https://stackoverflow.com/questions/19655975/check-if-an-array-contains-duplicate-values
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set
-function checkIfArrayIsUnique(myArray) {
-    return myArray.length === new Set(myArray).size;
-}
 
 formElement.addEventListener('submit', (event) => {
     event.preventDefault(); // Prevent reload page
@@ -173,7 +210,6 @@ formElement.addEventListener('submit', (event) => {
             anyChecked = true;
             // Should store actual time, instead of just the string.
             timeOfCheckedElements.push(activities.children[count].children[0].getAttribute("data-day-and-time"))
-            console.log(timeOfCheckedElements);
         }
     }
     if (!anyChecked) {
@@ -198,45 +234,7 @@ formElement.addEventListener('submit', (event) => {
         formElement.submit();
 });
 
-
-const CheckboxFocusOnTab = (checkboxFieldset) => {
-    for (let i = 0; i < checkboxFieldset.length; i++) {
-        checkboxFieldset[i].addEventListener('focus', (event) => {
-            event.target.parentNode.classList.add('focus');
-        });
-        checkboxFieldset[i].addEventListener('blur', (event) => {
-            event.target.parentNode.classList.remove('focus');
-        });
-    }
-}
-const SetupPageElementsOnPageLoad = () => {
-    otherJobRoleField.style.display = "none";
-    paypalElement.style.display = "none";
-    bitcoinElement.style.display = "none";
-    colorElement.disabled = true;
-    paymentElement.selectedIndex = 1; // Selecting so default is credit card
-    nameElement.focus(); // Setting first textbox as focus
-}
-
-// Live Validation
-nameElement.addEventListener("blur", (event) => {
-    Validate(nameElement, nameValidator);
-})
-emailElement.addEventListener("blur", (event) => {
-    Validate(emailElement, emailValidator);
-})
-creditcardNumberElement.addEventListener("blur", (event) => {
-    Validate(creditcardNumberElement, cardnumberValidator);
-})
-zipNumberElement.addEventListener("blur", (event) => {
-
-    Validate(zipNumberElement, zipnumberValidator);
-})
-cvvNumberElement.addEventListener("blur", (event) => {
-    Validate(cvvNumberElement, cvvnumberValidator);
-})
-
-
 // On page load
 CheckboxFocusOnTab(activitiesCheckboxes);
 SetupPageElementsOnPageLoad()
+SetupLiveValidation();
