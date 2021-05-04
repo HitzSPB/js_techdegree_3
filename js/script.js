@@ -61,9 +61,9 @@ function RemoveValidationError(element) {
     }
 }
 
-function Validate(element, validator) {
+function Validate(element, validator, customErrorInformation = null) {
     if (!validator.test(element.value)) {
-        AddValidationError(element);
+        AddValidationError(element, customErrorInformation);
         return 1;
     }
     else {
@@ -103,7 +103,15 @@ const SetupLiveValidation = () => {
         Validate(nameElement, nameValidator);
     });
     nameElement.addEventListener("input", () => {
-        Validate(nameElement, nameValidator);
+        if (nameElement === "") {
+            AddValidationError(nameElement, "Name field cannot be blank")
+        }
+        else if (nameElement.value.length < 2) {
+            AddValidationError(nameElement, "Name field Must be at-least 2 characters")
+        }
+        else {
+            Validate(nameElement, nameValidator, "Name field contains illegal characters");
+        }
     });
     emailElement.addEventListener("blur", () => {
         Validate(emailElement, emailValidator);
@@ -214,7 +222,7 @@ formElement.addEventListener('submit', (event) => {
     event.preventDefault(); // Prevent reload page
     var errorsFoundCount = 0;
     // Check name
-    errorsFoundCount += Validate(nameElement, nameValidator);
+    errorsFoundCount += Validate(nameElement, nameValidator, "Please enter your name correctly");
 
     // Check email
     errorsFoundCount += Validate(emailElement, emailValidator);
