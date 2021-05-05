@@ -110,6 +110,20 @@ function activityErrorCheck() {
     }
 }
 
+function emailErrorCheck() {
+    if (emailElement.value.length < 1) {
+        AddValidationError(emailElement, "Email field cannot be blank")
+        return 1;
+    }
+    else if (!emailElement.value.includes("@")) {
+        AddValidationError(emailElement, "Your email must contain a @")
+        return 1;
+    }
+    else {
+        return Validate(emailElement, emailValidator, "Please enter a correct email");
+    }
+}
+
 const CheckboxFocusOnTab = (checkboxFieldset) => {
     for (let i = 0; i < checkboxFieldset.length; i++) {
         checkboxFieldset[i].addEventListener('focus', (event) => {
@@ -135,13 +149,13 @@ const SetupLiveValidation = () => {
         Validate(nameElement, nameValidator);
     });
     nameElement.addEventListener("input", () => {
-        Validate(nameElement, nameValidator, "Name field cannot be blank");
+        Validate(nameElement, nameValidator);
     });
     emailElement.addEventListener("blur", () => {
-        Validate(emailElement, emailValidator);
+        emailErrorCheck()
     });
     emailElement.addEventListener("input", () => {
-        Validate(emailElement, emailValidator);
+        emailErrorCheck()
     });
     creditcardNumberElement.addEventListener("blur", () => {
         Validate(creditcardNumberElement, cardnumberValidator);
@@ -248,10 +262,10 @@ formElement.addEventListener('submit', (event) => {
     event.preventDefault(); // Prevent reload page
     var errorsFoundCount = 0;
     // Check name
-    errorsFoundCount += Validate(nameElement, nameValidator, "Please enter your name correctly");
+    errorsFoundCount += Validate(nameElement, nameValidator, "Name field cannot be blank");
 
     // Check email
-    errorsFoundCount += Validate(emailElement, emailValidator);
+    errorsFoundCount += emailErrorCheck();
 
     // Check activities selected
     errorsFoundCount += activityErrorCheck();
