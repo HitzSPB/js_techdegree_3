@@ -18,9 +18,10 @@ const creditcardNumberElement = document.querySelector('#cc-num');
 const zipNumberElement = document.querySelector('#zip');
 const cvvNumberElement = document.querySelector('#cvv');
 const titleElement = document.querySelector('#title');
+const title = document.getElementById("title").value;
 
 // RegEx validators
-const nameValidator = /\D{2,}$/
+const nameValidator = /.{1,}$/
 
 // Found regex for email validation :: https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
 const emailValidator = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -31,8 +32,6 @@ const cvvnumberValidator = /^[0-9]{3}$/
 
 // Functions
 function JobRoleOther() {
-    var title = document.getElementById("title").value;
-    var otherJobRoleField = document.querySelector("#other-job-role");
     if (title === "other") {
         otherJobRoleField.style.display = "block";
     } else {
@@ -79,16 +78,22 @@ function checkIfArrayIsUnique(myArray) {
 }
 
 function activityErrorCheck() {
-    var anyChecked = false;
-    var timeOfCheckedElements = [];
-    for (var count = 0; count <= activities.childElementCount - 1; count++) {
-        if (activities.children[count].children[0].checked) {
+    let anyChecked = false;
+    let timeOfCheckedElements = [];
+    for (let count = 0; count <= activities.childElementCount - 1; count++) {
+        let activityElement = activities.children[count].children[0];
+        if (activityElement.checked) {
             anyChecked = true;
             // Should store actual time, instead of just the string.
-            timeOfCheckedElements.push(activities.children[count].children[0].getAttribute("data-day-and-time"))
+            timeOfCheckedElements.push(activityElement.getAttribute("data-day-and-time"))
         }
-        else if (timeOfCheckedElements.includes(activities.children[count].children[0].getAttribute("data-day-and-time"))) {
-            activities.children[count].children[0].parentElement.classList.add("disabled");
+        else if (timeOfCheckedElements.includes(activityElement.getAttribute("data-day-and-time"))) {
+            activityElement.disabled = true;
+            activityElement.parentElement.classList.add("disabled");
+        }
+        else if (!timeOfCheckedElements.includes(activityElement.getAttribute("data-day-and-time")) && activityElement.parentElement.classList.contains("disabled")) {
+            activityElement.disabled = false;
+            activityElement.parentElement.classList.remove("disabled");
         }
     }
     if (!anyChecked) {
@@ -130,15 +135,7 @@ const SetupLiveValidation = () => {
         Validate(nameElement, nameValidator);
     });
     nameElement.addEventListener("input", () => {
-        if (nameElement === "") {
-            AddValidationError(nameElement, "Name field cannot be blank")
-        }
-        else if (nameElement.value.length < 2) {
-            AddValidationError(nameElement, "Name field Must be at-least 2 characters")
-        }
-        else {
-            Validate(nameElement, nameValidator, "Name field contains illegal characters");
-        }
+        Validate(nameElement, nameValidator, "Name field cannot be blank");
     });
     emailElement.addEventListener("blur", () => {
         Validate(emailElement, emailValidator);
@@ -175,7 +172,6 @@ const SetupLiveValidation = () => {
 // Listeners
 
 titleElement.addEventListener('change', (event) => {
-    var otherJobRoleField = document.querySelector("#other-job-role");
     if (event.target.value === "other") {
         otherJobRoleField.style.display = "block";
     } else {
@@ -188,7 +184,7 @@ titleElement.addEventListener('change', (event) => {
 designElement.addEventListener('change', (event) => {
     colorElement.disabled = false;
     // Remove options
-    var i, L = colorElement.options.length - 1;
+    let i, L = colorElement.options.length - 1;
     for (i = L; i >= 0; i--) {
         colorElement.remove(i);
     }
@@ -221,8 +217,8 @@ designElement.addEventListener('change', (event) => {
 
 fieldsetElement.addEventListener('change', (event) => {
     if (event.target.type === "checkbox") {
-        var totalprice = 0;
-        for (var count = 0; count <= activities.childElementCount - 1; count++) {
+        let totalprice = 0;
+        for (let count = 0; count <= activities.childElementCount - 1; count++) {
             if (activities.children[count].children[0].checked) {
                 totalprice += parseInt(activities.children[count].children[0].getAttribute("data-cost"));
             }
